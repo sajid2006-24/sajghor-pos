@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { font-family: 'Hind Siliguri','Noto Sans Bengali','Inter',system-ui,sans-serif; }
+body { @apply bg-[#f8fafc] text-slate-800 antialiased; }
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:999px; }
+::-webkit-scrollbar-track { background:transparent; }
+@media print {
+  body * { visibility: hidden; }
+  #invoice-print, #invoice-print * { visibility: visible; }
+  #invoice-print { position:absolute; left:0; top:0; width:100%; }
+}
