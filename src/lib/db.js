@@ -4,10 +4,13 @@ const STORAGE_KEY = 'sajghor_db_v1'
 const AUTH_KEY = 'sajghor_auth'
 
 const defaultStore = {
-  name: 'সাজঘর কসমেটিক্স এন্ড ভ্যারাইটিজ সেন্টার',
-  proprietor: 'মোঃ রায়হান মিয়া',
+  name: 'Sajghor Cosmetics & Varieties Center',
+  proprietor: 'Md Rayhan Mia',
   phone: '01799-303374',
-  address: 'চর কাশিম নগর-নতুন মোড়ের পূর্ব পার্শ্বে, বেলাব, নরসিংদী',
+  address: 'Char Kashim Nagar, east of Natun More, Belab, Narsingdi',
+  name_bn: 'সাজঘর কসমেটিক্স এন্ড ভ্যারাইটিজ সেন্টার',
+  proprietor_bn: 'মোঃ রায়হান মিয়া',
+  address_bn: 'চর কাশিম নগর-নতুন মোড়ের পূর্ব পার্শ্বে, বেলাব, নরসিংদী',
   logo: '',
   currency: 'BDT',
   invoicePrefix: 'INV-',
@@ -15,6 +18,7 @@ const defaultStore = {
   lowStockThreshold: 5,
   taxRate: 0,
   paymentMethods: { cash:true, bkash:true, nagad:true, other:true },
+  hardware: { printerWidth:'80', autoPrint:true, cashDrawer:true, scannerEnabled:true, printerType:'browser' },
 }
 
 const defaultDB = {
