@@ -3,7 +3,8 @@ import { useDB } from '../lib/db'
 import { useI18n } from '../lib/i18n'
 import { getHW, openCashDrawer } from '../lib/hardware'
 import { formatTaka } from '../lib/utils'
-import { Search, Plus, Minus, Trash2, Printer, X, ScanLine } from 'lucide-react'
+import { Search, Plus, Minus, Trash2, Printer, X, ScanLine, Camera } from 'lucide-react'
+import MobileScanner from '../components/MobileScanner'
 
 export default function POS(){
   const db = useDB(s=>s.db)
@@ -20,6 +21,7 @@ export default function POS(){
   const [customer,setCustomer]=useState('Walk-in Customer')
   const [customerPhone,setCustomerPhone]=useState('')
   const [showInvoice,setShowInvoice]=useState(null)
+  const [showScanner,setShowScanner]=useState(false)
   const searchRef = useRef(null)
 
   const allCats = ['All', ...Array.from(new Set([...db.categories.map(c=>c.name), 'Cosmetics','Shoes','Variety','Photo','Photocopy','Print','Other']))]
@@ -138,10 +140,14 @@ export default function POS(){
             <span>{hw.scannerEnabled ? (lang==='bn'?'বারকোড স্ক্যানার প্রস্তুত — স্ক্যান করলে স্বয়ংক্রিয়ভাবে কার্টে যোগ হবে':'Scanner ready — scan to add to cart') : 'Scanner disabled'}</span>
             <span className="ml-auto hidden sm:inline">{t('pos.scanHint')}</span>
           </div>
-          <div className="relative">
-            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
-            <input ref={searchRef} autoFocus value={q} onChange={e=>setQ(e.target.value)} onKeyDown={handleScanEnter} placeholder={t('pos.searchPlaceholder')} className="w-full h-12 pl-10 pr-10 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 text-[15px]"/>
-            <ScanLine size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hidden sm:block"/>
+          <div className="relative flex gap-2">
+            <div className="relative flex-1">
+              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
+              <input ref={searchRef} autoFocus value={q} onChange={e=>setQ(e.target.value)} onKeyDown={handleScanEnter} placeholder={t('pos.searchPlaceholder')} className="w-full h-12 pl-10 pr-4 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 text-[15px]"/>
+            </div>
+            <button onClick={()=>setShowScanner(true)} className="h-12 px-4 rounded-xl bg-slate-900 text-white flex items-center gap-2 font-bold text-sm hover:bg-black shrink-0">
+              <Camera size={18}/><span className="hidden sm:inline">{lang==='bn'?'স্ক্যান':'Scan'}</span>
+            </button>
           </div>
           <div className="mt-3 flex gap-2 overflow-auto pb-1">
             {allCats.map(c=>(
@@ -256,6 +262,20 @@ export default function POS(){
         </div>
       </div>
 
+      {showScanner && (
+        <MobileScanner onScan={(code)=>{
+          setShowScanner(false)
+          const variant=variants.find(v=> v.barcode===code)
+          if(variant){
+            const prodV=db.products.find(p=>p.id===variant.productId)
+            if(prodV) addToCart({key:variant.id, type:'product', productId:prodV.id, variantId:variant.id, name:prodV.name, variantName:variant.name, price:Number(variant.sellingPrice||prodV.sellingPrice), purchasePrice:Number(variant.purchasePrice||prodV.purchasePrice)})
+            return
+          }
+          const prod=db.products.find(p=> (p.barcode && p.barcode===code) || (p.sku && p.sku===code))
+          if(prod){ addToCart({key:prod.id, type:'product', productId:prod.id, name:prod.name, price:Number(prod.sellingPrice), purchasePrice:Number(prod.purchasePrice)}); return }
+          setQ(code)
+        }} onClose={()=>setShowScanner(false)} />
+      )}
       {showInvoice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40" onClick={()=>setShowInvoice(null)} />
