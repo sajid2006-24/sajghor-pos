@@ -6,7 +6,7 @@ import { Plus, Trash2, Edit3, Search, Package } from 'lucide-react'
 import { useI18n } from '../lib/i18n'
 
 export default function Products(){
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const db = useDB(s=>s.db)
   const addProduct = useDB(s=>s.addProduct)
   const updateProduct = useDB(s=>s.updateProduct)
@@ -64,7 +64,7 @@ export default function Products(){
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
             <input value={q} onChange={e=>setQ(e.target.value)} placeholder={t('prod.searchPlaceholder')} className="w-full h-10 pl-9 pr-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"/>
           </div>
-          <div className="text-sm text-slate-600">{t('prod.total')} {filtered.length}</div>
+          <div className="text-sm text-slate-600 flex items-center gap-1">{t('prod.total')} <span className="num font-black tabular-nums text-[15px] text-slate-900">{filtered.length}</span></div>
           {db.categories.length>0 && <div className="flex gap-2 flex-wrap">{db.categories.map(c=> <span key={c.id} className="px-2.5 py-1 rounded-full bg-slate-100 text-xs">{c.name}</span>)}</div>}
           <button onClick={()=>{
             const n=prompt(t('prod.promptNewCategory'))
@@ -93,10 +93,10 @@ export default function Products(){
                         {vars.length>0 && <div className="text-xs text-teal-700 mt-1">{vars.map(v=> `${v.name} (${v.stock})`).join(', ')}</div>}
                       </td>
                       <td className="py-3"><span className="px-2 py-1 bg-slate-100 rounded-full text-xs">{p.category||'—'}</span></td>
-                      <td className="py-3 text-right">{formatTaka(p.purchasePrice)}</td>
-                      <td className="py-3 text-right font-semibold">{formatTaka(p.sellingPrice)}</td>
+                      <td className="py-3 text-right num font-bold text-[15px] tabular-nums">{formatTaka(p.purchasePrice, lang)}</td>
+                      <td className="py-3 text-right num font-black text-[15px] tabular-nums">{formatTaka(p.sellingPrice, lang)}</td>
                       <td className="py-3 text-right">
-                        {vars.length? <span className="font-medium">{vars.reduce((a,v)=>a+Number(v.stock),0)}</span> : <span className={`${Number(p.stock)<= Number(p.minStock||db.store.lowStockThreshold)?'text-amber-700 font-bold':'font-medium'}`}>{p.stock}</span>}
+                        {vars.length? <span className="num font-black tabular-nums text-[15px]">{vars.reduce((a,v)=>a+Number(v.stock),0)}</span> : <span className={`num font-black tabular-nums text-[15px] ${Number(p.stock)<= Number(p.minStock||db.store.lowStockThreshold)?'text-amber-700':'text-slate-900'}`}>{p.stock}</span>}
                         <span className="text-xs text-slate-500"> {p.unit}</span>
                       </td>
                       <td className="px-4 py-3">

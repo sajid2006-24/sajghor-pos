@@ -1,5 +1,9 @@
-export const formatTaka = (n) => `৳${Number(n||0).toLocaleString('bn-BD')}`
-export const formatNum = (n) => Number(n||0).toLocaleString('bn-BD')
+export const formatTaka = (n, lang='en') => {
+  const v = Number(n||0)
+  const locale = lang==='bn' ? 'bn-BD' : 'en-BD'
+  return `৳${v.toLocaleString(locale)}`
+}
+export const formatNum = (n, lang='en') => Number(n||0).toLocaleString(lang==='bn'?'bn-BD':'en-BD')
 export const todayISO = () => new Date().toISOString().slice(0,10)
 export const genId = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6)
 export const genInvoice = (count) => `INV-${String(count+1).padStart(6,'0')}`

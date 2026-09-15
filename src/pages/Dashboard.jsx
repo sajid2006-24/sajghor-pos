@@ -45,24 +45,24 @@ export default function Dashboard(){
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-2xl border border-slate-200 p-5">
-          <div className="text-xs font-medium text-slate-500">{t('dash.todaySales')}</div>
-          <div className="text-2xl font-bold text-slate-900 mt-1">{formatTaka(todayRevenue)}</div>
-          <div className="text-xs text-slate-500 mt-1">{todaySales.length} {t('dash.transactions')}</div>
+          <div className="text-xs font-bold tracking-widest uppercase text-slate-500">{t('dash.todaySales')}</div>
+          <div className="num-2xl text-slate-900 mt-2">{formatTaka(todayRevenue, lang)}</div>
+          <div className="text-xs font-medium text-slate-500 mt-1 tabular-nums">{todaySales.length} {t('dash.transactions')}</div>
+        </div>
+        <div className="bg-white rounded-2xl border-2 border-emerald-200 p-5 bg-emerald-50/40">
+          <div className="text-xs font-bold tracking-widest uppercase text-emerald-700">{t('dash.todayProfit')}</div>
+          <div className="num-2xl text-emerald-700 mt-2">{formatTaka(todayProfit, lang)}</div>
+          <div className="text-xs text-emerald-700/70 mt-1">{t('dash.estimatedProfit')}</div>
         </div>
         <div className="bg-white rounded-2xl border border-slate-200 p-5">
-          <div className="text-xs font-medium text-slate-500">{t('dash.todayProfit')}</div>
-          <div className="text-2xl font-bold text-emerald-700 mt-1">{formatTaka(todayProfit)}</div>
-          <div className="text-xs text-slate-500 mt-1">{t('dash.estimatedProfit')}</div>
+          <div className="text-xs font-bold tracking-widest uppercase text-slate-500">{t('dash.totalProducts')}</div>
+          <div className="num-2xl text-slate-900 mt-2 tabular-nums">{totalProducts}</div>
+          <div className="text-xs text-slate-500 mt-1 tabular-nums">{totalVariants} {t('dash.variants')}</div>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-200 p-5">
-          <div className="text-xs font-medium text-slate-500">{t('dash.totalProducts')}</div>
-          <div className="text-2xl font-bold text-slate-900 mt-1">{totalProducts}</div>
-          <div className="text-xs text-slate-500 mt-1">{totalVariants} {t('dash.variants')}</div>
-        </div>
-        <div className={`rounded-2xl border p-5 ${lowStock.length?'bg-amber-50 border-amber-200':'bg-white border-slate-200'}`}>
-          <div className="text-xs font-medium text-slate-500">{t('dash.lowStock')}</div>
-          <div className={`text-2xl font-bold mt-1 ${lowStock.length?'text-amber-700':'text-slate-900'}`}>{lowStock.length}</div>
-          <div className="text-xs text-slate-500 mt-1">{lowStock.length? t('dash.lowStockAction'):t('dash.lowStockDesc')}</div>
+        <div className={`rounded-2xl border-2 p-5 ${lowStock.length?'bg-amber-50 border-amber-300':'bg-white border-slate-200'}`}>
+          <div className="text-xs font-bold tracking-widest uppercase text-slate-500">{t('dash.lowStock')}</div>
+          <div className={`num-2xl mt-2 tabular-nums ${lowStock.length?'text-amber-700':'text-slate-900'}`}>{lowStock.length}</div>
+          <div className="text-xs font-medium mt-1">{lowStock.length? t('dash.lowStockAction'):t('dash.lowStockDesc')}</div>
         </div>
       </div>
 
@@ -127,11 +127,11 @@ export default function Dashboard(){
               <tbody>
                 {db.sales.slice(0,5).map(s=>(
                   <tr key={s.id} className="border-t">
-                    <td className="py-2 px-2 font-mono text-xs font-medium">{s.invoiceNo}</td>
+                    <td className="py-2 px-2 font-mono text-xs font-bold">{s.invoiceNo}</td>
                     <td className="py-2 text-xs">{new Date(s.createdAt).toLocaleString(lang==='bn'?'bn-BD':'en-GB')}</td>
-                    <td className="py-2">{s.items.length}</td>
-                    <td className="py-2 text-right font-semibold">{formatTaka(s.total)}</td>
-                    <td className="py-2 text-right"><span className="px-2 py-1 rounded-full bg-slate-100 text-xs">{s.paymentMethod}</span></td>
+                    <td className="py-2 tabular-nums font-bold">{s.items.length}</td>
+                    <td className="py-2 text-right font-black num text-[15px]">{formatTaka(s.total, lang)}</td>
+                    <td className="py-2 text-right"><span className="px-2 py-1 rounded-full bg-slate-100 text-xs font-medium">{s.paymentMethod}</span></td>
                   </tr>
                 ))}
               </tbody>

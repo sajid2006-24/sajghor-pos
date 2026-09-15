@@ -4,7 +4,7 @@ import { formatTaka } from '../lib/utils'
 import { useI18n } from '../lib/i18n'
 
 export default function Reports(){
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const db=useDB(s=>s.db)
   const [from,setFrom]=useState('')
   const [to,setTo]=useState('')
@@ -61,7 +61,7 @@ export default function Reports(){
         <label className="text-sm">{t('rep.from')} <input type="date" value={from} onChange={e=>setFrom(e.target.value)} className="ml-2 h-9 px-2 rounded-xl border"/></label>
         <label className="text-sm">{t('rep.to')} <input type="date" value={to} onChange={e=>setTo(e.target.value)} className="ml-2 h-9 px-2 rounded-xl border"/></label>
         <button onClick={()=>{setFrom(''); setTo('')}} className="h-9 px-4 rounded-xl border text-sm">{t('rep.reset')}</button>
-        <div className="ml-auto text-xs text-slate-500">{hasData? `${count} ${t('rep.transactions')} • ${formatTaka(total)}`: t('rep.noDesc')}</div>
+        <div className="ml-auto text-xs text-slate-500 flex items-center gap-1.5">{hasData? <><span className="num font-black tabular-nums text-sm text-slate-900">{count}</span> <span>{t('rep.transactions')}</span><span className="mx-1">•</span><span className="num font-black tabular-nums text-sm text-slate-900">{formatTaka(total, lang)}</span></>: t('rep.noDesc')}</div>
       </div>
 
       {!hasData ? (
@@ -73,10 +73,10 @@ export default function Reports(){
       ):(
         <>
           <div className="grid md:grid-cols-4 gap-4">
-            <div className="bg-white rounded-2xl border p-5"><div className="text-xs text-slate-500">{t('rep.totalSales')}</div><div className="text-2xl font-bold mt-1">{formatTaka(total)}</div><div className="text-xs text-slate-500">{count} {t('rep.transactions')}</div></div>
-            <div className="bg-white rounded-2xl border p-5"><div className="text-xs text-slate-500">{t('rep.avgSale')}</div><div className="text-2xl font-bold mt-1">{formatTaka(Math.round(avg))}</div></div>
-            <div className="bg-white rounded-2xl border p-5"><div className="text-xs text-slate-500">{t('rep.totalCost')}</div><div className="text-2xl font-bold mt-1">{formatTaka(cost)}</div></div>
-            <div className="bg-emerald-50 rounded-2xl border border-emerald-200 p-5"><div className="text-xs text-emerald-700">{t('rep.totalProfit')}</div><div className="text-2xl font-bold mt-1 text-emerald-700">{formatTaka(profit)}</div><div className="text-xs text-emerald-700/70">{t('rep.revenueMinusCost')}</div></div>
+            <div className="bg-white rounded-2xl border p-5"><div className="text-xs font-bold tracking-widest uppercase text-slate-500">{t('rep.totalSales')}</div><div className="num-2xl font-black tabular-nums mt-2 text-slate-900">{formatTaka(total, lang)}</div><div className="text-xs text-slate-500 mt-1"><span className="num font-bold tabular-nums">{count}</span> {t('rep.transactions')}</div></div>
+            <div className="bg-white rounded-2xl border p-5"><div className="text-xs font-bold tracking-widest uppercase text-slate-500">{t('rep.avgSale')}</div><div className="num-xl font-black tabular-nums mt-2 text-slate-900">{formatTaka(Math.round(avg), lang)}</div></div>
+            <div className="bg-white rounded-2xl border p-5"><div className="text-xs font-bold tracking-widest uppercase text-slate-500">{t('rep.totalCost')}</div><div className="num-xl font-black tabular-nums mt-2 text-slate-900">{formatTaka(cost, lang)}</div></div>
+            <div className="bg-emerald-50 rounded-2xl border-2 border-emerald-200 p-5"><div className="text-xs font-bold tracking-widest uppercase text-emerald-700">{t('rep.totalProfit')}</div><div className="num-2xl font-black tabular-nums mt-2 text-emerald-700">{formatTaka(profit, lang)}</div><div className="text-xs text-emerald-700/70 mt-1">{t('rep.revenueMinusCost')}</div></div>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
@@ -86,7 +86,7 @@ export default function Reports(){
                 {byPayment.map(p=>(
                   <div key={p.k} className="flex items-center justify-between p-3 rounded-xl border">
                     <div className="text-sm font-medium capitalize">{p.k}</div>
-                    <div className="text-right"><div className="font-bold">{formatTaka(p.sum)}</div><div className="text-xs text-slate-500">{p.cnt} {t('rep.transactions')}</div></div>
+                    <div className="text-right"><div className="num font-black text-[15px] tabular-nums">{formatTaka(p.sum, lang)}</div><div className="text-xs text-slate-500"><span className="num font-bold tabular-nums">{p.cnt}</span> {t('rep.transactions')}</div></div>
                   </div>
                 ))}
               </div>
@@ -97,8 +97,8 @@ export default function Reports(){
                 <div className="mt-3 space-y-2">
                   {byCategory.map(c=>(
                     <div key={c.cat} className="flex items-center justify-between p-3 rounded-xl border">
-                      <div><div className="text-sm font-medium">{c.cat}</div><div className="text-xs text-slate-500">{c.qty} {t('rep.items')}</div></div>
-                      <div className="font-bold">{formatTaka(c.revenue)}</div>
+                      <div><div className="text-sm font-medium">{c.cat}</div><div className="text-xs text-slate-500"><span className="num font-bold tabular-nums">{c.qty}</span> {t('rep.items')}</div></div>
+                      <div className="num font-black text-[15px] tabular-nums">{formatTaka(c.revenue, lang)}</div>
                     </div>
                   ))}
                 </div>
@@ -113,7 +113,7 @@ export default function Reports(){
                 <thead className="text-xs text-slate-500"><tr><th className="text-left py-2">{t('rep.colRank')}</th><th className="text-left py-2">{t('rep.colProduct')}</th><th className="text-right py-2">{t('rep.colQty')}</th><th className="text-right py-2">{t('rep.colRevenue')}</th></tr></thead>
                 <tbody>
                   {byProduct.map((p,i)=>(
-                    <tr key={i} className="border-t"><td className="py-2">{i+1}</td><td className="py-2 font-medium">{p.name}</td><td className="py-2 text-right">{p.qty}</td><td className="py-2 text-right font-bold">{formatTaka(p.revenue)}</td></tr>
+                    <tr key={i} className="border-t"><td className="py-2 num tabular-nums font-bold">{i+1}</td><td className="py-2 font-medium">{p.name}</td><td className="py-2 text-right num font-bold tabular-nums">{p.qty}</td><td className="py-2 text-right num font-black text-[15px] tabular-nums">{formatTaka(p.revenue, lang)}</td></tr>
                   ))}
                 </tbody>
               </table>

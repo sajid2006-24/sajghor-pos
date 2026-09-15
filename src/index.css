@@ -4,6 +4,10 @@
 
 * { font-family: 'Hind Siliguri','Noto Sans Bengali','Inter',system-ui,sans-serif; }
 body { @apply bg-[#f8fafc] text-slate-800 antialiased; }
+.num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; letter-spacing: -0.02em; }
+.num-xl { font-size: 1.9rem; line-height: 1; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+.num-2xl { font-size: 2.25rem; line-height: 1; font-weight: 900; font-variant-numeric: tabular-nums; letter-spacing: -0.04em; }
+@media (max-width: 768px){ .num-xl{font-size:1.6rem} .num-2xl{font-size:1.85rem} }
 ::-webkit-scrollbar { width:6px; height:6px; }
 ::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:999px; }
 ::-webkit-scrollbar-track { background:transparent; }

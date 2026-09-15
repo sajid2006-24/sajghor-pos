@@ -25,7 +25,7 @@ export default function SalesHistory(){
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
           <input value={q} onChange={e=>setQ(e.target.value)} placeholder={t('sales.searchPlaceholder')} className="w-full h-10 pl-9 pr-3 rounded-xl border"/>
         </div>
-        <div className="text-sm text-slate-600">{filtered.length} {t('sales.records')}</div>
+        <div className="text-sm text-slate-600 flex items-center gap-1.5"><span className="num font-black tabular-nums text-[15px] text-slate-900">{filtered.length}</span> {t('sales.records')}</div>
       </div>
 
       {filtered.length===0 ? (
@@ -41,8 +41,8 @@ export default function SalesHistory(){
                     <td className="px-4 py-3 font-mono text-xs font-bold">{s.invoiceNo} {s.status==='returned' && <span className="ml-1 px-1.5 py-0.5 rounded bg-red-600 text-white text-[10px]">{t('sales.returned')}</span>}</td>
                     <td className="py-3 text-xs">{new Date(s.createdAt).toLocaleString(locale)}</td>
                     <td className="py-3"><div className="font-medium">{s.customerName}</div><div className="text-xs text-slate-500">{s.customerPhone||''}</div></td>
-                    <td className="py-3 text-right">{s.items.length}</td>
-                    <td className="py-3 text-right font-bold">{formatTaka(s.total)}</td>
+                    <td className="py-3 text-right num font-bold tabular-nums">{s.items.length}</td>
+                    <td className="py-3 text-right num font-black text-[15px] tabular-nums">{formatTaka(s.total, lang)}</td>
                     <td className="py-3"><span className="px-2 py-1 rounded-full bg-slate-100 text-xs">{s.paymentMethod}</span></td>
                     <td className="px-4 py-3"><div className="flex justify-end gap-1">
                       <button onClick={()=>setView(s)} className="px-3 py-1.5 rounded-lg border hover:bg-slate-50 text-xs">{t('sales.view')}</button>
@@ -72,9 +72,9 @@ export default function SalesHistory(){
               {view.status==='returned' && <div className="mt-2 text-xs font-bold text-red-600 border border-red-200 bg-red-50 px-2 py-1 rounded">{t('sales.returnedNote')}</div>}
               <table className="w-full text-xs mt-3">
                 <thead><tr className="border-y"><th className="text-left py-1">{t('sales.itemHeader')}</th><th className="text-right">{t('sales.qtyHeader')}</th><th className="text-right">{t('sales.totalHeader')}</th></tr></thead>
-                <tbody>{view.items.map((it,i)=> <tr key={i} className="border-b"><td className="py-1">{it.name}{it.variantName?` (${it.variantName})`:''}<div className="text-slate-500">{formatTaka(it.price)} × {it.qty}</div></td><td className="text-right">{it.qty}</td><td className="text-right font-medium">{formatTaka(it.price*it.qty - (it.discount||0))}</td></tr>)}</tbody>
+                <tbody>{view.items.map((it,i)=> <tr key={i} className="border-b"><td className="py-1">{it.name}{it.variantName?` (${it.variantName})`:''}<div className="text-slate-500 num tabular-nums">{formatTaka(it.price, lang)} × <span className="num font-bold tabular-nums">{it.qty}</span></div></td><td className="text-right num font-bold tabular-nums">{it.qty}</td><td className="text-right num font-black tabular-nums">{formatTaka(it.price*it.qty - (it.discount||0), lang)}</td></tr>)}</tbody>
               </table>
-              <div className="text-xs space-y-1 mt-3"><div className="flex justify-between"><span>{t('sales.subtotal')}</span><span>{formatTaka(view.subtotal)}</span></div><div className="flex justify-between"><span>{t('sales.discount')}</span><span>{formatTaka(view.discount)}</span></div><div className="flex justify-between font-bold text-sm border-t pt-2"><span>{t('sales.total')}</span><span>{formatTaka(view.total)}</span></div></div>
+              <div className="text-xs space-y-1 mt-3"><div className="flex justify-between"><span>{t('sales.subtotal')}</span><span className="num font-bold tabular-nums">{formatTaka(view.subtotal, lang)}</span></div><div className="flex justify-between"><span>{t('sales.discount')}</span><span className="num font-bold tabular-nums">{formatTaka(view.discount, lang)}</span></div><div className="flex justify-between font-black text-sm border-t pt-2"><span>{t('sales.total')}</span><span className="num font-black text-[15px] tabular-nums">{formatTaka(view.total, lang)}</span></div></div>
               <div className="text-center text-sm mt-4 pt-3 border-t">{t('inv.thanks')}</div>
             </div>
             <div className="p-4 flex gap-2 bg-slate-50 border-t">

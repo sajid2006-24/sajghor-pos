@@ -6,7 +6,7 @@ import { Plus, Trash2 } from 'lucide-react'
 import { useI18n } from '../lib/i18n'
 
 export default function Expenses(){
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const db=useDB(s=>s.db)
   const add=useDB(s=>s.addExpense)
   const del=useDB(s=>s.deleteExpense)
@@ -38,8 +38,8 @@ export default function Expenses(){
         <button onClick={()=>setShow(true)} className="px-4 py-2.5 bg-teal-700 text-white rounded-xl text-sm font-semibold inline-flex items-center gap-2"><Plus size={16}/> {t('exp.add')}</button>
       </div>
       <div className="bg-white rounded-2xl border p-5 flex items-center justify-between">
-        <div><div className="text-xs text-slate-500">{t('exp.total')}</div><div className="text-2xl font-bold">{formatTaka(total)}</div></div>
-        <div className="text-xs text-slate-500">{db.expenses.length} {t('exp.records')}</div>
+        <div><div className="text-xs font-bold tracking-widest uppercase text-slate-500">{t('exp.total')}</div><div className="num-2xl font-black tabular-nums text-slate-900 mt-1">{formatTaka(total, lang)}</div></div>
+        <div className="text-xs text-slate-500 flex items-center gap-1.5"><span className="num font-black tabular-nums text-[15px] text-slate-900">{db.expenses.length}</span> {t('exp.records')}</div>
       </div>
       {db.expenses.length===0 ? (
         <EmptyState title={t('exp.noTitle')} desc={t('exp.noDesc')} icon="💸" action={<button onClick={()=>setShow(true)} className="px-5 py-2.5 bg-teal-700 text-white rounded-xl text-sm font-semibold">{t('exp.first')}</button>} />
@@ -49,7 +49,7 @@ export default function Expenses(){
             <thead className="bg-slate-50 text-xs text-slate-600"><tr><th className="text-left px-4 py-3">{t('exp.tableDate')}</th><th className="text-left py-3">{t('exp.tableTitle')}</th><th className="text-left py-3">{t('exp.tableCategory')}</th><th className="text-right py-3">{t('exp.tableAmount')}</th><th className="text-right px-4 py-3">{t('exp.tableActions')}</th></tr></thead>
             <tbody>
               {db.expenses.slice().reverse().map(e=>(
-                <tr key={e.id} className="border-t"><td className="px-4 py-3 text-xs">{e.date}</td><td className="py-3 font-medium">{e.title}<div className="text-xs text-slate-500">{e.note||''}</div></td><td className="py-3"><span className="px-2 py-1 rounded-full bg-slate-100 text-xs">{e.category}</span></td><td className="py-3 text-right font-bold">{formatTaka(e.amount)}</td><td className="px-4 py-3 text-right"><button onClick={()=>{if(confirm(t('exp.deleteConfirm'))) del(e.id)}} className="p-2 hover:bg-red-50 text-red-600 rounded-lg"><Trash2 size={16}/></button></td></tr>
+                <tr key={e.id} className="border-t"><td className="px-4 py-3 text-xs num tabular-nums">{e.date}</td><td className="py-3 font-medium">{e.title}<div className="text-xs text-slate-500">{e.note||''}</div></td><td className="py-3"><span className="px-2 py-1 rounded-full bg-slate-100 text-xs">{e.category}</span></td><td className="py-3 text-right num font-black text-[15px] tabular-nums">{formatTaka(e.amount, lang)}</td><td className="px-4 py-3 text-right"><button onClick={()=>{if(confirm(t('exp.deleteConfirm'))) del(e.id)}} className="p-2 hover:bg-red-50 text-red-600 rounded-lg"><Trash2 size={16}/></button></td></tr>
               ))}
             </tbody>
           </table>

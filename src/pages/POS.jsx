@@ -169,8 +169,8 @@ export default function POS(){
                     <button key={v.id} onClick={()=>addToCart({key:v.id, type:'product', productId:p.id, variantId:v.id, name:p.name, variantName:v.name, price: Number(v.sellingPrice||p.sellingPrice), purchasePrice: Number(v.purchasePrice||p.purchasePrice), stock: v.stock})} className="text-left p-3 rounded-xl border hover:border-teal-500 hover:bg-teal-50/50 transition">
                       <div className="text-sm font-medium leading-tight">{p.name}</div>
                       <div className="text-xs text-teal-700 font-medium">{v.name}</div>
-                      <div className="text-xs text-slate-500 mt-1">{t('pos.stock')}: {v.stock} {p.unit} {v.barcode? `• ${v.barcode}`:''}</div>
-                      <div className="text-sm font-bold mt-1">{formatTaka(v.sellingPrice||p.sellingPrice)}</div>
+                      <div className="text-xs text-slate-500 mt-1 tabular-nums">{t('pos.stock')}: <span className="font-bold text-slate-700">{v.stock}</span> {p.unit} {v.barcode? `• ${v.barcode}`:''}</div>
+                      <div className="mt-1 font-black tracking-tight num text-[16px] text-slate-900">{formatTaka(v.sellingPrice||p.sellingPrice, lang)}</div>
                     </button>
                   ))
                 }
@@ -178,8 +178,8 @@ export default function POS(){
                   <button key={p.id} onClick={()=>addToCart({key:p.id, type:'product', productId:p.id, name:p.name, price:Number(p.sellingPrice), purchasePrice:Number(p.purchasePrice), stock:p.stock })} className="text-left p-3 rounded-xl border hover:border-teal-500 hover:bg-teal-50/50 transition">
                     <div className="text-sm font-medium leading-tight">{p.name}</div>
                     <div className="text-xs text-slate-500">{p.category||''} {p.sku? `• ${p.sku}`:''} {p.barcode? `• ${p.barcode}`:''}</div>
-                    <div className="text-xs text-slate-500 mt-1">{t('pos.stock')}: {p.stock} {p.unit}</div>
-                    <div className="text-sm font-bold mt-1">{formatTaka(p.sellingPrice)}</div>
+                    <div className="text-xs text-slate-500 mt-1 tabular-nums">{t('pos.stock')}: <span className="font-bold text-slate-700">{p.stock}</span> {p.unit}</div>
+                    <div className="mt-1 font-black tracking-tight num text-[16px] text-slate-900">{formatTaka(p.sellingPrice, lang)}</div>
                   </button>
                 )
               })}
@@ -195,7 +195,7 @@ export default function POS(){
                 <button key={s.id} onClick={()=>addToCart({key:'svc-'+s.id, type:'service', serviceId:s.id, name:s.name, price:Number(s.price), cost:Number(s.cost||0)})} className="text-left p-3 rounded-xl border hover:border-amber-400 hover:bg-amber-50 transition">
                   <div className="text-sm font-medium">{s.name}</div>
                   <div className="text-xs text-slate-500">{s.unit||'per item'}</div>
-                  <div className="text-sm font-bold mt-1">{formatTaka(s.price)}</div>
+                  <div className="mt-1 font-black tracking-tight num text-[16px] text-slate-900">{formatTaka(s.price, lang)}</div>
                 </button>
               ))}
             </div>
@@ -219,27 +219,27 @@ export default function POS(){
             <div key={it.key} className="flex gap-3 p-3 border-b hover:bg-slate-50">
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium truncate">{it.name} {it.variantName? `(${it.variantName})`:''}</div>
-                <div className="text-xs text-slate-500">{it.type==='product'?t('pos.product'):t('pos.service')} • {formatTaka(it.price)} </div>
+                <div className="text-xs text-slate-500 tabular-nums">{it.type==='product'?t('pos.product'):t('pos.service')} • <span className="font-semibold text-slate-700">{formatTaka(it.price, lang)}</span> </div>
                 <div className="flex items-center gap-1 mt-2">
-                  <button onClick={()=>updateQty(it.key,-1)} className="w-7 h-7 grid place-items-center border rounded-lg hover:bg-white"><Minus size={14}/></button>
-                  <input type="number" value={it.qty} onChange={e=>changeQty(it.key, e.target.value)} className="w-12 h-7 text-center border rounded-lg text-sm"/>
-                  <button onClick={()=>updateQty(it.key,1)} className="w-7 h-7 grid place-items-center border rounded-lg hover:bg-white"><Plus size={14}/></button>
-                  <span className="ml-2 text-sm font-semibold">{formatTaka(lineTotal(it))}</span>
+                  <button onClick={()=>updateQty(it.key,-1)} className="w-8 h-8 grid place-items-center border rounded-lg hover:bg-white bg-white shadow-sm"><Minus size={16}/></button>
+                  <input type="number" value={it.qty} onChange={e=>changeQty(it.key, e.target.value)} className="w-14 h-8 text-center border-2 rounded-lg text-[15px] font-black num"/>
+                  <button onClick={()=>updateQty(it.key,1)} className="w-8 h-8 grid place-items-center border rounded-lg hover:bg-white bg-white shadow-sm"><Plus size={16}/></button>
+                  <span className="ml-2 font-black tracking-tight num text-[15px] text-slate-900">{formatTaka(lineTotal(it), lang)}</span>
                 </div>
               </div>
               <div className="flex flex-col items-end gap-2">
                 <button onClick={()=>removeItem(it.key)} className="p-1.5 hover:bg-red-50 text-red-600 rounded-lg"><Trash2 size={16}/></button>
-                <input type="number" value={it.discount} onChange={e=> setCart(c=> c.map(x=> x.key===it.key? {...x, discount:Number(e.target.value)||0}:x))} placeholder={t('pos.discount')} className="w-20 h-7 px-2 border rounded-lg text-xs" />
+                <input type="number" value={it.discount} onChange={e=> setCart(c=> c.map(x=> x.key===it.key? {...x, discount:Number(e.target.value)||0}:x))} placeholder={t('pos.discount')} className="w-20 h-7 px-2 border rounded-lg text-xs tabular-nums" />
               </div>
             </div>
           ))}
         </div>
 
         <div className="p-4 space-y-3 bg-slate-50 rounded-b-2xl">
-          <div className="space-y-1 text-sm">
-            <div className="flex justify-between"><span className="text-slate-600">{t('pos.subtotal')}</span><span className="font-medium">{formatTaka(subtotal)}</span></div>
-            <div className="flex justify-between items-center"><span className="text-slate-600">{t('pos.extraDiscount')}</span><input type="number" value={discount} onChange={e=>setDiscount(e.target.value)} className="w-24 h-8 px-2 border rounded-lg text-right"/></div>
-            <div className="flex justify-between text-[16px] font-bold border-t pt-2"><span>{t('pos.total')}</span><span>{formatTaka(total)}</span></div>
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm"><span className="text-slate-600">{t('pos.subtotal')}</span><span className="font-bold num text-[15px]">{formatTaka(subtotal, lang)}</span></div>
+            <div className="flex justify-between items-center text-sm"><span className="text-slate-600">{t('pos.extraDiscount')}</span><input type="number" value={discount} onChange={e=>setDiscount(e.target.value)} className="w-28 h-9 px-3 border-2 rounded-xl text-right font-bold num text-[15px] bg-white"/></div>
+            <div className="flex justify-between items-center border-t-2 border-slate-900 pt-3"><span className="text-sm font-bold tracking-wide uppercase">{t('pos.total')}</span><span className="num-2xl text-slate-900">{formatTaka(total, lang)}</span></div>
           </div>
           <div className="grid grid-cols-4 gap-2">
             {[
@@ -252,12 +252,12 @@ export default function POS(){
             ))}
           </div>
           {payment==='cash' && (
-            <div className="grid grid-cols-2 gap-2">
-              <label className="text-xs">{t('pos.received')} <input type="number" value={received} onChange={e=>setReceived(e.target.value)} className="mt-1 w-full h-9 px-2 rounded-xl border" placeholder={String(total)}/></label>
-              <div className="text-xs">{t('pos.change')} <div className="mt-1 h-9 grid place-items-center rounded-xl bg-white border font-bold">{formatTaka(Math.max(0,change))}</div></div>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="text-xs font-bold tracking-wide uppercase text-slate-600">{t('pos.received')} <input type="number" value={received} onChange={e=>setReceived(e.target.value)} className="mt-1 w-full h-11 px-3 rounded-xl border-2 bg-white font-black num text-[16px]" placeholder={String(total)}/></label>
+              <div className="text-xs font-bold tracking-wide uppercase text-slate-600">{t('pos.change')} <div className="mt-1 h-11 grid place-items-center rounded-xl bg-emerald-50 border-2 border-emerald-300 num font-black text-[18px] text-emerald-700">{formatTaka(Math.max(0,change), lang)}</div></div>
             </div>
           )}
-          <button onClick={checkout} disabled={cart.length===0} className="w-full h-11 bg-teal-700 hover:bg-teal-800 disabled:opacity-40 text-white rounded-xl font-bold">{t('pos.completeSale')} — {formatTaka(total)}</button>
+          <button onClick={checkout} disabled={cart.length===0} className="w-full h-12 bg-teal-700 hover:bg-teal-800 disabled:opacity-40 text-white rounded-xl font-black text-[16px] tracking-wide shadow"> {t('pos.completeSale')} — <span className="num">{formatTaka(total, lang)}</span></button>
           <div className="text-[11px] text-slate-500 text-center flex items-center justify-center gap-1"><Printer size={12}/>{t('pos.recordNote')} • {hw.printerWidth}mm {lang==='bn'?'প্রিন্ট':'print'}</div>
         </div>
       </div>
