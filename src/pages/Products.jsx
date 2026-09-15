@@ -3,8 +3,10 @@ import { useDB } from '../lib/db'
 import { formatTaka } from '../lib/utils'
 import EmptyState from '../components/EmptyState'
 import { Plus, Trash2, Edit3, Search, Package } from 'lucide-react'
+import { useI18n } from '../lib/i18n'
 
 export default function Products(){
+  const { t } = useI18n()
   const db = useDB(s=>s.db)
   const addProduct = useDB(s=>s.addProduct)
   const updateProduct = useDB(s=>s.updateProduct)
@@ -14,7 +16,8 @@ export default function Products(){
   const [q,setQ]=useState('')
   const [show,setShow]=useState(false)
   const [editing,setEditing]=useState(null)
-  const [form,setForm]=useState({ name:'', sku:'', barcode:'', category:'', brand:'', purchasePrice:'', sellingPrice:'', stock:'', minStock:'', unit:'পিস', supplier:'', expiry:'', batch:'', enableVariant:false, variantList:'' })
+  const defaultUnit = t('prod.unitPcs')
+  const [form,setForm]=useState({ name:'', sku:'', barcode:'', category:'', brand:'', purchasePrice:'', sellingPrice:'', stock:'', minStock:'', unit: defaultUnit, supplier:'', expiry:'', batch:'', enableVariant:false, variantList:'' })
 
   const filtered = db.products.filter(p=>{
     if(!q) return true
@@ -23,16 +26,16 @@ export default function Products(){
   })
 
   const openNew=()=>{
-    setEditing(null); setForm({ name:'', sku:'', barcode:'', category:'', brand:'', purchasePrice:'', sellingPrice:'', stock:'', minStock:'', unit:'পিস', supplier:'', expiry:'', batch:'', enableVariant:false, variantList:''}); setShow(true)
+    setEditing(null); setForm({ name:'', sku:'', barcode:'', category:'', brand:'', purchasePrice:'', sellingPrice:'', stock:'', minStock:'', unit: t('prod.unitPcs'), supplier:'', expiry:'', batch:'', enableVariant:false, variantList:''}); setShow(true)
   }
   const openEdit=(p)=>{
     const vars = variants.filter(v=>v.productId===p.id)
     setEditing(p)
-    setForm({ name:p.name, sku:p.sku||'', barcode:p.barcode||'', category:p.category||'', brand:p.brand||'', purchasePrice:String(p.purchasePrice||''), sellingPrice:String(p.sellingPrice||''), stock:String(p.stock||''), minStock:String(p.minStock||''), unit:p.unit||'পিস', supplier:p.supplier||'', expiry:p.expiry||'', batch:p.batch||'', enableVariant: vars.length>0, variantList: vars.map(v=> `${v.name}:${v.stock||0}:${v.sellingPrice||p.sellingPrice||''}`).join('\n') })
+    setForm({ name:p.name, sku:p.sku||'', barcode:p.barcode||'', category:p.category||'', brand:p.brand||'', purchasePrice:String(p.purchasePrice||''), sellingPrice:String(p.sellingPrice||''), stock:String(p.stock||''), minStock:String(p.minStock||''), unit:p.unit||t('prod.unitPcs'), supplier:p.supplier||'', expiry:p.expiry||'', batch:p.batch||'', enableVariant: vars.length>0, variantList: vars.map(v=> `${v.name}:${v.stock||0}:${v.sellingPrice||p.sellingPrice||''}`).join('\n') })
     setShow(true)
   }
   const save=()=>{
-    if(!form.name.trim()) return alert('পণ্যের নাম দিন')
+    if(!form.name.trim()) return alert(t('prod.alertName'))
     const base={ name:form.name.trim(), sku:form.sku.trim(), barcode:form.barcode.trim(), category:form.category.trim(), brand:form.brand.trim(), purchasePrice:Number(form.purchasePrice||0), sellingPrice:Number(form.sellingPrice||0), stock:Number(form.stock||0), minStock:Number(form.minStock||db.store.lowStockThreshold), unit:form.unit, supplier:form.supplier, expiry:form.expiry, batch:form.batch }
     let vars=[]
     if(form.enableVariant && form.variantList.trim()){
@@ -51,33 +54,33 @@ export default function Products(){
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3 justify-between">
-        <h1 className="text-xl font-bold flex items-center gap-2"><Package className="text-teal-700"/> পণ্য</h1>
-        <button onClick={openNew} className="px-4 py-2.5 bg-teal-700 text-white rounded-xl text-sm font-semibold inline-flex items-center gap-2"><Plus size={16}/> পণ্য যোগ করুন</button>
+        <h1 className="text-xl font-bold flex items-center gap-2"><Package className="text-teal-700"/> {t('prod.title')}</h1>
+        <button onClick={openNew} className="px-4 py-2.5 bg-teal-700 text-white rounded-xl text-sm font-semibold inline-flex items-center gap-2"><Plus size={16}/> {t('prod.add')}</button>
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200 p-4">
         <div className="flex flex-wrap gap-3 items-center">
           <div className="relative flex-1 min-w-[220px]">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
-            <input value={q} onChange={e=>setQ(e.target.value)} placeholder="নাম, SKU, বারকোড দিয়ে খুঁজুন..." className="w-full h-10 pl-9 pr-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"/>
+            <input value={q} onChange={e=>setQ(e.target.value)} placeholder={t('prod.searchPlaceholder')} className="w-full h-10 pl-9 pr-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"/>
           </div>
-          <div className="text-sm text-slate-600">মোট: {filtered.length} টি</div>
+          <div className="text-sm text-slate-600">{t('prod.total')} {filtered.length}</div>
           {db.categories.length>0 && <div className="flex gap-2 flex-wrap">{db.categories.map(c=> <span key={c.id} className="px-2.5 py-1 rounded-full bg-slate-100 text-xs">{c.name}</span>)}</div>}
           <button onClick={()=>{
-            const n=prompt('নতুন ক্যাটাগরি নাম লিখুন')
+            const n=prompt(t('prod.promptNewCategory'))
             if(n) addCategory(n)
-          }} className="px-3 py-2 rounded-xl border text-sm">+ ক্যাটাগরি</button>
+          }} className="px-3 py-2 rounded-xl border text-sm">{t('prod.addCategory')}</button>
         </div>
       </div>
 
       {filtered.length===0 ? (
-        <EmptyState title="এখনো কোনো পণ্য যোগ করা হয়নি।" desc="আপনার দোকানের প্রথম পণ্যটি যোগ করুন। নাম, দাম, স্টক দিন এবং সংরক্ষণ করুন।" icon="📦" action={<button onClick={openNew} className="px-5 py-2.5 bg-teal-700 text-white rounded-xl text-sm font-semibold">প্রথম পণ্য যোগ করুন</button>} />
+        <EmptyState title={t('prod.noProductsTitle')} desc={t('prod.noProductsDesc')} icon="📦" action={<button onClick={openNew} className="px-5 py-2.5 bg-teal-700 text-white rounded-xl text-sm font-semibold">{t('prod.firstProduct')}</button>} />
       ):(
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
           <div className="overflow-auto">
             <table className="w-full text-sm">
               <thead className="bg-slate-50 text-xs text-slate-600">
-                <tr><th className="text-left px-4 py-3">পণ্য</th><th className="text-left py-3">ক্যাটাগরি</th><th className="text-right py-3">ক্রয়</th><th className="text-right py-3">বিক্রয়</th><th className="text-right py-3">স্টক</th><th className="text-right px-4 py-3">অ্যাকশন</th></tr>
+                <tr><th className="text-left px-4 py-3">{t('prod.tableProduct')}</th><th className="text-left py-3">{t('prod.tableCategory')}</th><th className="text-right py-3">{t('prod.purchase')}</th><th className="text-right py-3">{t('prod.selling')}</th><th className="text-right py-3">{t('prod.stock')}</th><th className="text-right px-4 py-3">{t('common.actions')}</th></tr>
               </thead>
               <tbody>
                 {filtered.map(p=>{
@@ -99,7 +102,7 @@ export default function Products(){
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-1">
                           <button onClick={()=>openEdit(p)} className="p-2 hover:bg-white border border-transparent hover:border-slate-200 rounded-lg"><Edit3 size={16}/></button>
-                          <button onClick={()=>{ if(confirm(`"${p.name}" মুছবেন?`)) deleteProduct(p.id)}} className="p-2 hover:bg-red-50 text-red-600 rounded-lg"><Trash2 size={16}/></button>
+                          <button onClick={()=>{ if(confirm(t('prod.deleteConfirm') + ` "${p.name}"?`)) deleteProduct(p.id)}} className="p-2 hover:bg-red-50 text-red-600 rounded-lg"><Trash2 size={16}/></button>
                         </div>
                       </td>
                     </tr>
@@ -116,31 +119,31 @@ export default function Products(){
           <div className="absolute inset-0 bg-black/40" onClick={()=>setShow(false)}/>
           <div className="relative w-full max-w-[720px] bg-white rounded-2xl shadow-xl max-h-[90vh] overflow-auto">
             <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-              <h3 className="font-semibold">{editing? 'পণ্য সম্পাদনা':'নতুন পণ্য যোগ করুন'}</h3>
+              <h3 className="font-semibold">{editing? t('prod.editTitle'):t('prod.newTitle')}</h3>
               <button onClick={()=>setShow(false)} className="p-2 hover:bg-slate-100 rounded-xl">✕</button>
             </div>
             <div className="p-6 grid md:grid-cols-2 gap-4 text-sm">
-              <label className="md:col-span-2">পণ্যের নাম* <input value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border border-slate-300" placeholder="যেমন: Lakme Face Cream"/></label>
-              <label>SKU / কোড <input value={form.sku} onChange={e=>setForm({...form,sku:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
-              <label>বারকোড <input value={form.barcode} onChange={e=>setForm({...form,barcode:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
-              <label>ক্যাটাগরি <input list="cats" value={form.category} onChange={e=>setForm({...form,category:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border" placeholder="কসমেটিক্স / জুতা / ভ্যারাইটিজ"/>
+              <label className="md:col-span-2">{t('prod.name')}* <input value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border border-slate-300" placeholder={t('prod.namePlaceholder')}/></label>
+              <label>{t('prod.skuLabel')} <input value={form.sku} onChange={e=>setForm({...form,sku:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
+              <label>{t('prod.barcodeLabel')} <input value={form.barcode} onChange={e=>setForm({...form,barcode:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
+              <label>{t('prod.categoryLabel')} <input list="cats" value={form.category} onChange={e=>setForm({...form,category:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border" placeholder={t('prod.categoryPlaceholder')}/>
                 <datalist id="cats">{db.categories.map(c=> <option key={c.id} value={c.name}/>)}</datalist>
               </label>
-              <label>ব্র্যান্ড <input value={form.brand} onChange={e=>setForm({...form,brand:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
-              <label>ক্রয় মূল্য <input type="number" value={form.purchasePrice} onChange={e=>setForm({...form,purchasePrice:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
-              <label>বিক্রয় মূল্য* <input type="number" value={form.sellingPrice} onChange={e=>setForm({...form,sellingPrice:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
-              <label>বর্তমান স্টক <input type="number" value={form.stock} onChange={e=>setForm({...form,stock:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
-              <label>সর্বনিম্ন স্টক <input type="number" value={form.minStock} onChange={e=>setForm({...form,minStock:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
-              <label>একক <select value={form.unit} onChange={e=>setForm({...form,unit:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"><option>পিস</option><option>জোড়া</option><option>বক্স</option><option>কেজি</option><option>লিটার</option><option>মিটার</option></select></label>
-              <label>সাপ্লায়ার <input value={form.supplier} onChange={e=>setForm({...form,supplier:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
-              <label>ব্যাচ নং <input value={form.batch} onChange={e=>setForm({...form,batch:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
-              <label>মেয়াদ (ঐচ্ছিক) <input type="date" value={form.expiry} onChange={e=>setForm({...form,expiry:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
-              <label className="md:col-span-2 flex items-center gap-2 mt-2"><input type="checkbox" checked={form.enableVariant} onChange={e=>setForm({...form,enableVariant:e.target.checked})}/> ভ্যারিয়েন্ট আছে (যেমন জুতার সাইজ)</label>
-              {form.enableVariant && <label className="md:col-span-2">ভ্যারিয়েন্ট (প্রতি লাইনে: নাম:স্টক:দাম) <textarea value={form.variantList} onChange={e=>setForm({...form,variantList:e.target.value})} rows={4} className="mt-1 w-full p-3 rounded-xl border font-mono text-xs" placeholder={`Size 6:10:650\nSize 7:8:650\nSize 8:5:650`}/><span className="text-xs text-slate-500">উদা: Size 6:10:650 — প্রতি ভ্যারিয়েন্ট আলাদা স্টক রাখবে</span></label>}
+              <label>{t('prod.brandLabel')} <input value={form.brand} onChange={e=>setForm({...form,brand:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
+              <label>{t('prod.purchasePrice')} <input type="number" value={form.purchasePrice} onChange={e=>setForm({...form,purchasePrice:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
+              <label>{t('prod.sellingPrice')}* <input type="number" value={form.sellingPrice} onChange={e=>setForm({...form,sellingPrice:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
+              <label>{t('prod.currentStock')} <input type="number" value={form.stock} onChange={e=>setForm({...form,stock:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
+              <label>{t('prod.minStock')} <input type="number" value={form.minStock} onChange={e=>setForm({...form,minStock:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
+              <label>{t('prod.unitLabel')} <select value={form.unit} onChange={e=>setForm({...form,unit:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"><option>{t('prod.unitPcs')}</option><option>{t('prod.unitPair')}</option><option>{t('prod.unitBox')}</option><option>{t('prod.unitKg')}</option><option>{t('prod.unitLiter')}</option><option>{t('prod.unitMeter')}</option></select></label>
+              <label>{t('prod.supplierLabel')} <input value={form.supplier} onChange={e=>setForm({...form,supplier:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
+              <label>{t('prod.batchLabel')} <input value={form.batch} onChange={e=>setForm({...form,batch:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
+              <label>{t('prod.expiryLabel')} <input type="date" value={form.expiry} onChange={e=>setForm({...form,expiry:e.target.value})} className="mt-1 w-full h-10 px-3 rounded-xl border"/></label>
+              <label className="md:col-span-2 flex items-center gap-2 mt-2"><input type="checkbox" checked={form.enableVariant} onChange={e=>setForm({...form,enableVariant:e.target.checked})}/> {t('prod.allowVariant')}</label>
+              {form.enableVariant && <label className="md:col-span-2">{t('prod.variantLabel')} <textarea value={form.variantList} onChange={e=>setForm({...form,variantList:e.target.value})} rows={4} className="mt-1 w-full p-3 rounded-xl border font-mono text-xs" placeholder={`Size 6:10:650\nSize 7:8:650\nSize 8:5:650`}/><span className="text-xs text-slate-500">{t('prod.variantPlaceholderHelp')}</span></label>}
             </div>
             <div className="sticky bottom-0 bg-white border-t px-6 py-4 flex justify-end gap-2">
-              <button onClick={()=>setShow(false)} className="px-4 py-2 rounded-xl border">বাতিল</button>
-              <button onClick={save} className="px-6 py-2 rounded-xl bg-teal-700 text-white font-semibold">সংরক্ষণ করুন</button>
+              <button onClick={()=>setShow(false)} className="px-4 py-2 rounded-xl border">{t('common.cancel')}</button>
+              <button onClick={save} className="px-6 py-2 rounded-xl bg-teal-700 text-white font-semibold">{t('common.save')}</button>
             </div>
           </div>
         </div>

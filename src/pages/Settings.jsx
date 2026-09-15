@@ -32,11 +32,17 @@ export default function Settings(){
 
       <div className="bg-white rounded-2xl border p-6 space-y-4">
         <h2 className="font-semibold flex items-center gap-2"><Globe size={18}/>{t('set.language')}</h2>
-        <div className="flex gap-2">
-          <button onClick={()=>setLang('en')} className={`flex-1 py-3 rounded-xl border-2 font-semibold ${lang==='en'?'border-teal-700 bg-teal-50 text-teal-800':'border-slate-200'}`}>🇬🇧 English (Default)</button>
-          <button onClick={()=>setLang('bn')} className={`flex-1 py-3 rounded-xl border-2 font-semibold ${lang==='bn'?'border-teal-700 bg-teal-50 text-teal-800':'border-slate-200'}`}>🇧🇩 বাংলা</button>
+        <div className="flex gap-3">
+          <button onClick={()=>setLang('en')} className={`flex-1 relative py-4 rounded-xl border-2 font-semibold transition flex flex-col items-center gap-1 ${lang==='en'?'border-teal-700 bg-teal-700 text-white shadow':'border-slate-200 bg-white hover:border-slate-300'}`}>
+            <span className="text-lg">🇬🇧</span><span>English</span><span className="text-[11px] opacity-80">Default</span>
+            {lang==='en' && <span className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white text-teal-700 grid place-items-center text-xs">✓</span>}
+          </button>
+          <button onClick={()=>setLang('bn')} className={`flex-1 relative py-4 rounded-xl border-2 font-semibold transition flex flex-col items-center gap-1 ${lang==='bn'?'border-teal-700 bg-teal-700 text-white shadow':'border-slate-200 bg-white hover:border-slate-300'}`}>
+            <span className="text-lg">🇧🇩</span><span>বাংলা</span><span className="text-[11px] opacity-80">Bangla</span>
+            {lang==='bn' && <span className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white text-teal-700 grid place-items-center text-xs">✓</span>}
+          </button>
         </div>
-        <p className="text-xs text-slate-500">Default is English. Toggle anytime from header or here.</p>
+        <p className="text-xs text-slate-500 text-center">{lang==='bn' ? 'ডিফল্ট ইংরেজি। হেডার বা এখান থেকে যেকোনো সময় পরিবর্তন করুন।' : 'Default is English. Toggle anytime from header or here.'} — {lang==='en' ? 'Only English will be shown' : 'শুধুমাত্র বাংলা দেখানো হবে'}</p>
       </div>
 
       <div className="bg-white rounded-2xl border p-6 space-y-4">
@@ -105,7 +111,7 @@ export default function Settings(){
       <div className="bg-white rounded-2xl border p-6 space-y-3">
         <h2 className="font-semibold">{t('set.paymentMethods')}</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-          {Object.entries({cash:'Cash / ক্যাশ', bkash:'bKash', nagad:'Nagad', other:'Other / অন্যান্য'}).map(([k,l])=>(
+          {Object.entries({cash: lang==='bn'?'ক্যাশ':'Cash', bkash:'bKash', nagad:'Nagad', other: lang==='bn'?'অন্যান্য':'Other'}).map(([k,l])=>(
             <label key={k} className={`p-3 rounded-xl border flex items-center gap-2 cursor-pointer ${form.paymentMethods[k]?'bg-teal-50 border-teal-200':'bg-white'}`}>
               <input type="checkbox" checked={!!form.paymentMethods[k]} onChange={e=>setForm({...form, paymentMethods:{...form.paymentMethods, [k]:e.target.checked}})} />{l}
             </label>

@@ -1,7 +1,10 @@
 import { useDB, useComputed } from '../lib/db'
 import { Search, AlertTriangle } from 'lucide-react'
 import { useState } from 'react'
+import { useI18n } from '../lib/i18n'
+
 export default function Stock(){
+  const { t } = useI18n()
   const { lowStock } = useComputed()
   const db = useDB(s=>s.db)
   const [q,setQ]=useState('')
@@ -16,38 +19,38 @@ export default function Stock(){
   const ok = filtered.filter(r=> Number(r.stock) > Number(r.min))
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold">স্টক</h1>
+      <h1 className="text-xl font-bold">{t('stock.title')}</h1>
       <div className="bg-white rounded-2xl border p-4 flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[220px]">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
-          <input value={q} onChange={e=>setQ(e.target.value)} placeholder="পণ্য / ভ্যারিয়েন্ট খুঁজুন..." className="w-full h-10 pl-9 pr-3 rounded-xl border"/>
+          <input value={q} onChange={e=>setQ(e.target.value)} placeholder={t('stock.searchPlaceholder')} className="w-full h-10 pl-9 pr-3 rounded-xl border"/>
         </div>
-        <div className="text-sm px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 flex items-center gap-2"><AlertTriangle size={14}/> কম স্টক: {low.length}</div>
-        <div className="text-sm px-3 py-1.5 rounded-full bg-slate-50 border">মোট আইটেম: {filtered.length}</div>
+        <div className="text-sm px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 flex items-center gap-2"><AlertTriangle size={14}/> {t('stock.lowCount')} {low.length}</div>
+        <div className="text-sm px-3 py-1.5 rounded-full bg-slate-50 border">{t('stock.totalItems')} {filtered.length}</div>
       </div>
 
-      {filtered.length===0 ? <div className="bg-white rounded-2xl border p-10 text-center text-sm text-slate-500">কোনো স্টক তথ্য নেই। প্রথমে পণ্য যোগ করুন।</div> : (
+      {filtered.length===0 ? <div className="bg-white rounded-2xl border p-10 text-center text-sm text-slate-500">{t('stock.noData')}</div> : (
         <>
           {low.length>0 && (
             <div className="bg-white rounded-2xl border border-amber-200 overflow-hidden">
-              <div className="px-4 py-3 bg-amber-50 font-semibold text-sm flex items-center gap-2"><AlertTriangle size={16} className="text-amber-600"/> কম স্টক — দ্রুত রিস্টক করুন</div>
+              <div className="px-4 py-3 bg-amber-50 font-semibold text-sm flex items-center gap-2"><AlertTriangle size={16} className="text-amber-600"/> {t('stock.lowHeader')}</div>
               <div className="overflow-auto">
                 <table className="w-full text-sm">
-                  <thead className="text-xs text-slate-500 bg-slate-50"><tr><th className="text-left px-4 py-2">পণ্য</th><th className="text-left py-2">ক্যাটাগরি</th><th className="text-right py-2">স্টক</th><th className="text-right py-2">সর্বনিম্ন</th></tr></thead>
+                  <thead className="text-xs text-slate-500 bg-slate-50"><tr><th className="text-left px-4 py-2">{t('stock.colProduct')}</th><th className="text-left py-2">{t('stock.colCategory')}</th><th className="text-right py-2">{t('stock.colStock')}</th><th className="text-right py-2">{t('stock.colMin')}</th></tr></thead>
                   <tbody>{low.map(r=> <tr key={r.id} className="border-t"><td className="px-4 py-2 font-medium">{r.name}</td><td className="py-2">{r.category||'—'}</td><td className="py-2 text-right font-bold text-amber-700">{r.stock}</td><td className="py-2 text-right">{r.min}</td></tr>)}</tbody>
                 </table>
               </div>
             </div>
           )}
           <div className="bg-white rounded-2xl border overflow-hidden">
-            <div className="px-4 py-3 font-semibold text-sm">সকল স্টক</div>
+            <div className="px-4 py-3 font-semibold text-sm">{t('stock.allStock')}</div>
             <div className="overflow-auto">
               <table className="w-full text-sm">
-                <thead className="text-xs text-slate-500 bg-slate-50"><tr><th className="text-left px-4 py-2">পণ্য</th><th className="text-left py-2">ক্যাটাগরি</th><th className="text-right py-2">স্টক</th><th className="text-right px-4 py-2">অবস্থা</th></tr></thead>
+                <thead className="text-xs text-slate-500 bg-slate-50"><tr><th className="text-left px-4 py-2">{t('stock.colProduct')}</th><th className="text-left py-2">{t('stock.colCategory')}</th><th className="text-right py-2">{t('stock.colStock')}</th><th className="text-right px-4 py-2">{t('stock.colStatus')}</th></tr></thead>
                 <tbody>
                   {[...low,...ok].map(r=>{
                     const isLow = Number(r.stock) <= Number(r.min)
-                    return <tr key={r.id} className="border-t"><td className="px-4 py-2">{r.name}</td><td className="py-2">{r.category||'—'}</td><td className="py-2 text-right font-medium">{r.stock}</td><td className="px-4 py-2 text-right">{isLow? <span className="px-2 py-1 rounded-full bg-amber-100 text-amber-800 text-xs">কম</span>:<span className="px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs">ঠিক আছে</span>}</td></tr>
+                    return <tr key={r.id} className="border-t"><td className="px-4 py-2">{r.name}</td><td className="py-2">{r.category||'—'}</td><td className="py-2 text-right font-medium">{r.stock}</td><td className="px-4 py-2 text-right">{isLow? <span className="px-2 py-1 rounded-full bg-amber-100 text-amber-800 text-xs">{t('stock.low')}</span>:<span className="px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs">{t('stock.ok')}</span>}</td></tr>
                   })}
                 </tbody>
               </table>

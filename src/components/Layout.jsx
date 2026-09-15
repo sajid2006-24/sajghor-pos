@@ -70,11 +70,10 @@ export default function Layout({children}){
           <div className="flex-1 hidden md:block">
             <div className="text-sm text-slate-500">{t('nav.welcome')}</div>
           </div>
-          <div className="flex items-center gap-1.5 bg-slate-100 rounded-full p-1">
-            <button onClick={()=>setLang('en')} className={`px-3 py-1 rounded-full text-xs font-semibold transition ${lang==='en'?'bg-white shadow text-slate-900':'text-slate-600'}`}>EN</button>
-            <button onClick={()=>setLang('bn')} className={`px-3 py-1 rounded-full text-xs font-semibold transition ${lang==='bn'?'bg-white shadow text-slate-900':'text-slate-600'}`}>BN</button>
+          <div className="flex items-center gap-1 bg-slate-900 rounded-full p-1 shadow-inner">
+            <button onClick={()=>setLang('en')} className={`px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all ${lang==='en'?'bg-white text-slate-900 shadow':'text-white/70 hover:text-white'}`}>EN</button>
+            <button onClick={()=>setLang('bn')} className={`px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all ${lang==='bn'?'bg-white text-slate-900 shadow':'text-white/70 hover:text-white'}`}>BN</button>
           </div>
-          <button onClick={()=>setLang(lang==='en'?'bn':'en')} className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border text-xs font-medium hover:bg-slate-50" title="Toggle language"><Globe size={14}/>{lang==='en'?'বাংলা':'English'}</button>
           <NavLink to="/pos" className="inline-flex items-center gap-2 bg-teal-700 hover:bg-teal-800 text-white px-4 md:px-5 py-2 md:py-2.5 rounded-xl text-sm font-semibold shadow"> <ShoppingCart size={16}/><span className="hidden sm:inline">{t('nav.newSaleBtn')}</span><span className="sm:hidden">POS</span></NavLink>
           <div className="text-xs text-slate-600 hidden xl:block max-w-[260px] truncate text-right leading-tight">{address}</div>
         </header>
